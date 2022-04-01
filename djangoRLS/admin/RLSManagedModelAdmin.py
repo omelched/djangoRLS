@@ -21,8 +21,14 @@ class RLSManagedModelAdmin(ModelAdmin):
 
         permitted_ids = [record.record_object_id for record in RLSPermission.objects.filter(
             Q(
-                Q(grantee_object_id=request.user.pk) & Q(grantee_content_type=USER_MODEL_CONTENT_TYPE) |
-                Q(grantee_object_id__in=request.user.groups.all()) & Q(grantee_content_type=GROUP_MODEL_CONTENT_TYPE)
+                (
+                        Q(grantee_object_id=request.user.pk) &
+                        Q(grantee_content_type=USER_MODEL_CONTENT_TYPE)
+                ) |
+                (
+                        Q(grantee_object_id__in=list(request.user.groups.all().values_list('pk', flat=True))) &
+                        Q(grantee_content_type=GROUP_MODEL_CONTENT_TYPE)
+                )
             ),
             record_content_type=ContentType.objects.get_for_model(self.model)
         ).distinct()]
