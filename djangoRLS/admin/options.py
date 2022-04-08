@@ -29,7 +29,7 @@ class RLSManagedModelAdmin(ModelAdmin):
     def get_queryset(self, request):
         qs = super().get_queryset(request)
 
-        if getattr(self.model, 'RLSable', None):
+        if getattr(self.model._meta, 'RLSable', None):
             return apply_restrictions(qs, request.user)
 
         RLSable_related_filter = {
