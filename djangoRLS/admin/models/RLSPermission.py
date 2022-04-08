@@ -10,12 +10,13 @@ USER_MODEL = get_user_model()
 RLSable_MODELS = [model for model in apps.get_models() if getattr(model._meta, 'RLSable', None)]
 
 
-class RLSManagedModelAdminForm(autocomplete.FutureModelForm):
+class RLSPermissionAdminForm(autocomplete.FutureModelForm):
     class Meta:
         model = RLSPermission
         fields = (
             'record_ref',
             'grantee_ref',
+            'permit_all',
         )
 
     record_ref = autocomplete.GenericForeignKeyModelField(
@@ -31,6 +32,6 @@ class RLSManagedModelAdminForm(autocomplete.FutureModelForm):
 
 
 class RLSPermissionAdmin(ModelAdmin):
-    form = RLSManagedModelAdminForm
-    list_display = ('record_ref', 'grantee_ref',)
+    form = RLSPermissionAdminForm
+    list_display = ('record_ref', 'grantee_ref', 'permit_all')
     search_fields = ('reford_ref', 'grantee_ref',)

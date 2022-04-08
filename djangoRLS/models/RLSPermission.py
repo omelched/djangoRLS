@@ -36,17 +36,23 @@ class RLSPermission(models.Model):
         ContentType,
         on_delete=models.CASCADE,
         related_name='rls_permitted',
-        null=False,
-        blank=False,
+        null=True,
+        blank=True,
         verbose_name=_('grantee content type'),
     )
     grantee_object_id = models.CharField(
         max_length=36,
-        null=False,
-        blank=False,
+        null=True,
+        blank=True,
         verbose_name=_('grantee id'),
     )
     grantee_ref = GenericForeignKey(
         'grantee_content_type',
         'grantee_object_id'
+    )
+    permit_all = models.BooleanField(
+        null=False,
+        blank=True,
+        default=False,
+        verbose_name=_('permit all'),
     )

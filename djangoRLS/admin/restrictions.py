@@ -13,6 +13,22 @@ def apply_restrictions(qs: QuerySet, user):
     if user.is_superuser:
         return qs
 
+    if RLSPermission.objects.filter(
+            Q(
+                (
+                        Q(grantee_object_id=user.pk) &
+                        Q(grantee_content_type=USER_MODEL_CONTENT_TYPE)
+                ) |
+                (
+                        Q(grantee_object_id__in=list(user.groups.all().values_list('pk', flat=True))) &
+                        Q(grantee_content_type=GROUP_MODEL_CONTENT_TYPE)
+                )
+            ),
+            record_content_type=ContentType.objects.get_for_model(qs.model),
+            permit_all=True,
+    ).exists():
+        return qs
+
     permitted_ids = [record.record_object_id for record in RLSPermission.objects.filter(
         Q(
             (
